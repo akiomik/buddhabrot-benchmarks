@@ -55,6 +55,15 @@ clean:
     -rm -f */buddhabrot.pgm
     @echo "✅ Clean completed!"
 
+# Collect language versions
+lang-info:
+    @echo "🔧 Collecting language versions..."
+    @echo "**Language Versions:**"
+    @odin version 2>/dev/null | head -1 | sed 's/^/- Odin: /' || echo "- Odin: unknown"
+    @roc version 2>/dev/null | head -1 | sed 's/^/- Roc: /' || echo "- Roc: unknown" 
+    @rustc --version 2>/dev/null | sed 's/^/- Rust: /' || echo "- Rust: unknown"
+    @zig version 2>/dev/null | sed 's/^/- Zig: /' || echo "- Zig: unknown"
+
 # Run benchmark
 bench: build-all
     @echo "📊 Running benchmark..."
