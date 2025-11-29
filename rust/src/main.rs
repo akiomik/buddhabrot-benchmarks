@@ -1,7 +1,6 @@
 #![feature(random)]
 
-use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::fs;
 use std::path::Path;
 use std::random::random;
 
@@ -79,17 +78,16 @@ fn write_pgm(
     max: u32,
     data: Vec<u32>,
 ) -> Result<(), std::io::Error> {
-    let file = File::create(path)?;
-    let mut out = BufWriter::new(file);
-    writeln!(out, "P2")?; // P2: Portable graymap (ASCII)
-    writeln!(out, "{} {}", width, height)?;
-    writeln!(out, "{}", max)?;
+    let estimated_size = 100 + data.len() * 12; // header + data
+    let mut content = String::with_capacity(estimated_size);
+
+    content.push_str(&format!("P2\n{} {}\n{}\n", width, height, max));
 
     for v in data {
-        write!(out, "{} ", v)?;
+        content.push_str(&format!("{} ", v));
     }
 
-    Ok(())
+    fs::write(path, content)
 }
 
 // returns [0,1)
