@@ -26,6 +26,11 @@ Buddhabrot fractal implementations in Odin, Roc, Rust, and Zig with benchmarking
 | `Roc`   | 857.5 ± 11.8 | 848.0    | 870.7    | 1.25 ± 0.03 |
 | `Rust`  | 857.6 ± 13.6 | 842.4    | 868.6    | 1.25 ± 0.03 |
 
+> [!NOTE]
+> All implementations use standard library random number generators for fair comparison.
+> The performance difference observed on macOS is likely due to Rust's `std::random` implementation using cryptographically secure random number generation via system calls,
+> while other languages appear to use faster pseudo-random generators.
+
 ### Binary Sizes
 
 | Language | Executable Size | Relative to Smallest |
