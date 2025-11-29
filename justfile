@@ -64,6 +64,31 @@ lang-info:
     @rustc --version 2>/dev/null | sed 's/^/- Rust: /' || echo "- Rust: unknown"
     @zig version 2>/dev/null | sed 's/^/- Zig: /' || echo "- Zig: unknown"
 
+# Show executable file sizes
+file-sizes:
+    @echo "📏 Executable file sizes:"
+    @echo "**Binary Sizes:**"
+    @if [ -f "./odin/buddhabrot" ]; then \
+        ls -lh ./odin/buddhabrot | awk '{print "- Odin: " $5}'; \
+    else \
+        echo "- Odin: not built"; \
+    fi
+    @if [ -f "./roc/buddhabrot" ]; then \
+        ls -lh ./roc/buddhabrot | awk '{print "- Roc: " $5}'; \
+    else \
+        echo "- Roc: not built"; \
+    fi
+    @if [ -f "./rust/target/release/buddhabrot" ]; then \
+        ls -lh ./rust/target/release/buddhabrot | awk '{print "- Rust: " $5}'; \
+    else \
+        echo "- Rust: not built"; \
+    fi
+    @if [ -f "./zig/zig-out/bin/buddhabrot" ]; then \
+        ls -lh ./zig/zig-out/bin/buddhabrot | awk '{print "- Zig: " $5}'; \
+    else \
+        echo "- Zig: not built"; \
+    fi
+
 # Run benchmark
 bench: build-all
     @echo "📊 Running benchmark..."

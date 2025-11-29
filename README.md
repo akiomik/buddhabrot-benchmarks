@@ -26,6 +26,15 @@ Buddhabrot fractal implementations in Odin, Roc, Rust, and Zig with benchmarking
 | `Roc`   | 857.5 ± 11.8 | 848.0    | 870.7    | 1.25 ± 0.03 |
 | `Rust`  | 857.6 ± 13.6 | 842.4    | 868.6    | 1.25 ± 0.03 |
 
+### Binary Sizes
+
+| Language | Executable Size | Relative to Smallest |
+|:---------|----------------:|:--------------------:|
+| `Odin`   | 168K            | 1.00x                |
+| `Zig`    | 229K            | 1.36x                |
+| `Rust`   | 399K            | 2.38x                |
+| `Roc`    | 4.6M            | 28.0x                |
+
 ## Quick Start
 
 ### Prerequisites
@@ -52,11 +61,11 @@ just --list
 
 ## Available Commands
 
-### Benchmarking
+### Benchmarking & Comparison
 
 ```bash
-just bench       # Full benchmark with statistics
-just bench-quick # Quick single-run benchmark
+just bench      # Benchmark with statistics
+just file-sizes # List binary sizes
 ```
 
 ### Building & Running
