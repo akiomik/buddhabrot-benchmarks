@@ -23,6 +23,11 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
     let ymin = -1.5;
     let ymax = 1.5;
 
+    let x_range = xmax - xmin;
+    let y_range = ymax - ymin;
+    let x_scale = width as f64 / x_range;
+    let y_scale = height as f64 / y_range;
+
     for _ in 0..samples {
         let cr = rand_range(xmin, xmax);
         let ci = rand_range(ymin, ymax);
@@ -52,11 +57,13 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
         if escaped {
             for (xr, yi) in path {
                 if xmin <= xr && xr <= xmax && ymin <= yi && yi <= ymax {
-                    let px = ((xr - xmin) / (xmax - xmin) * width as f64) as isize;
-                    let py = ((yi - ymin) / (ymax - ymin) * height as f64) as isize;
+                    let px = ((xr - xmin) * x_scale) as isize;
+                    let py = ((yi - ymin) * y_scale) as isize;
+                    let px_usize = px as usize;
+                    let py_usize = py as usize;
 
-                    if px >= 0 && py >= 0 && (px as usize) < width && (py as usize) < height {
-                        hist[py as usize * width + px as usize] += 1;
+                    if px >= 0 && py >= 0 && px_usize < width && py_usize < height {
+                        hist[py_usize * width + px_usize] += 1;
                     }
                 }
             }
