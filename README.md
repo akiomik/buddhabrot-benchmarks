@@ -76,19 +76,23 @@ just build-all   # Build all implementations
 just clean       # Clean all build artifacts
 
 # Individual languages
-just build-odin  # Build Odin implementation
-just run-odin    # Run Odin implementation
-just dev odin    # Build and run Odin
+just build-odin   # Build Odin implementation
+just run-odin     # Run Odin implementation
+just dev odin     # Build and run Odin
+just profile-odin # Profile Odin implementation
 
-just build-roc   # Build Roc implementation  
+just build-roc   # Build Roc implementation
 just run-roc     # Run Roc implementation
 just dev roc     # Build and run Roc
+just profile-roc # Profile Roc implementation
 
-just build-rust  # Build Rust implementation
-just run-rust    # Run Rust implementation  
-just dev rust    # Build and run Rust
+just build-rust   # Build Rust implementation
+just run-rust     # Run Rust implementation
+just dev rust     # Build and run Rust
+just profile-rust # Profile Rust implementation
 
 just build-zig   # Build Zig implementation
 just run-zig     # Run Zig implementation
 just dev zig     # Build and run Zig
+just profile-zig # Profile Zig implementation
 ```

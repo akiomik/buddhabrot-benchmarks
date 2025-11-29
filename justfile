@@ -53,6 +53,7 @@ clean:
     -rm -rf rust/target
     -rm -rf zig/zig-out
     -rm -f */buddhabrot.pgm
+    -rm -f *_profile.trace
     @echo "✅ Clean completed!"
 
 # Collect language versions
@@ -116,3 +117,36 @@ build lang:
 # Run a specific language (helper for dev mode)  
 run lang:
     @just run-{{lang}}
+
+# Profile with macOS Instruments Time Profiler (macOS only)
+[macos]
+profile lang: (build lang)
+    @just profile-{{lang}}
+
+# Profile Odin implementation with Time Profiler (macOS only)
+[macos]
+profile-odin:
+    @echo "🔍 Starting Time Profiler for Odin..."
+    @echo "Profile will be saved to: odin_profile.trace"
+    xcrun xctrace record --template "Time Profiler" --output odin_profile.trace --launch ./odin/buddhabrot
+
+# Profile Roc implementation with Time Profiler (macOS only)
+[macos]
+profile-roc:
+    @echo "🔍 Starting Time Profiler for Roc..."
+    @echo "Profile will be saved to: roc_profile.trace"
+    xcrun xctrace record --template "Time Profiler" --output roc_profile.trace --launch ./roc/buddhabrot
+
+# Profile Rust implementation with Time Profiler (macOS only)
+[macos]
+profile-rust:
+    @echo "🔍 Starting Time Profiler for Rust..."
+    @echo "Profile will be saved to: rust_profile.trace"
+    xcrun xctrace record --template "Time Profiler" --output rust_profile.trace --launch ./rust/target/release/buddhabrot
+
+# Profile Zig implementation with Time Profiler (macOS only)
+[macos]
+profile-zig:
+    @echo "🔍 Starting Time Profiler for Zig..."
+    @echo "Profile will be saved to: zig_profile.trace"
+    xcrun xctrace record --template "Time Profiler" --output zig_profile.trace --launch ./zig/zig-out/bin/buddhabrot
