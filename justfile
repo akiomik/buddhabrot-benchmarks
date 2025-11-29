@@ -8,7 +8,7 @@ build-all: build-odin build-roc build-rust build-zig
 # Build Odin implementation
 build-odin:
     @echo "🔧 Building Odin..."
-    cd odin && odin build . -out=buddhabrot -o:speed
+    cd odin && odin build . -out=buddhabrot -o:speed -microarch:native
 
 # Build Roc implementation
 build-roc:
@@ -18,12 +18,12 @@ build-roc:
 # Build Rust implementation
 build-rust:
     @echo "🔧 Building Rust..."
-    cd rust && cargo build --profile release
+    cd rust && RUSTFLAGS="-C target-cpu=native" cargo build --profile release
 
 # Build Zig implementation
 build-zig:
     @echo "🔧 Building Zig..."
-    cd zig && zig build --release=fast
+    cd zig && zig build --release=fast -Dcpu=native
 
 # Run Odin implementation
 run-odin: build-odin
