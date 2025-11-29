@@ -1,58 +1,74 @@
+# Variables and constants
+LANGUAGES := "odin roc rust zig"
+BINARY_NAME := "buddhabrot"
+BUILD_EMOJI := "🔧"
+RUN_EMOJI := "🚀"
+
+# Binary paths for each language
+ODIN_BIN := "odin/" + BINARY_NAME
+ROC_BIN := "roc/" + BINARY_NAME
+RUST_BIN := "rust/target/release/" + BINARY_NAME
+ZIG_BIN := "zig/zig-out/bin/" + BINARY_NAME
+
 # Default recipe - show available commands
 default:
     @just --list
 
 # Build all implementations
-build-all: build-odin build-roc build-rust build-zig
+build-all:
+    #!/usr/bin/env bash
+    for lang in {{LANGUAGES}}; do
+        just build-$lang
+    done
 
 # Build Odin implementation
 build-odin:
-    @echo "🔧 Building Odin..."
-    cd odin && odin build . -out=buddhabrot -o:speed -microarch:native
+    @echo "{{BUILD_EMOJI}} Building Odin..."
+    cd odin && odin build . -out={{BINARY_NAME}} -o:speed -microarch:native
 
 # Build Roc implementation
 build-roc:
-    @echo "🔧 Building Roc..."
-    cd roc && roc build --output buddhabrot --optimize
+    @echo "{{BUILD_EMOJI}} Building Roc..."
+    cd roc && roc build --output {{BINARY_NAME}} --optimize
 
 # Build Rust implementation
 build-rust:
-    @echo "🔧 Building Rust..."
+    @echo "{{BUILD_EMOJI}} Building Rust..."
     cd rust && RUSTFLAGS="-C target-cpu=native" cargo build --profile release
 
 # Build Zig implementation
 build-zig:
-    @echo "🔧 Building Zig..."
+    @echo "{{BUILD_EMOJI}} Building Zig..."
     cd zig && zig build --release=fast -Dcpu=native
 
 # Run Odin implementation
 run-odin: build-odin
-    @echo "🚀 Running Odin..."
-    ./odin/buddhabrot
+    @echo "{{RUN_EMOJI}} Running Odin..."
+    ./{{ODIN_BIN}}
 
 # Run Roc implementation
 run-roc: build-roc
-    @echo "🚀 Running Roc..."
-    ./roc/buddhabrot
+    @echo "{{RUN_EMOJI}} Running Roc..."
+    ./{{ROC_BIN}}
 
 # Run Rust implementation
 run-rust: build-rust
-    @echo "🚀 Running Rust..."
-    ./rust/target/release/buddhabrot
+    @echo "{{RUN_EMOJI}} Running Rust..."
+    ./{{RUST_BIN}}
 
 # Run Zig implementation
 run-zig: build-zig
-    @echo "🚀 Running Zig..."
-    ./zig/zig-out/bin/buddhabrot
+    @echo "{{RUN_EMOJI}} Running Zig..."
+    ./{{ZIG_BIN}}
 
 # Clean all build artifacts
 clean:
     @echo "🧹 Cleaning build artifacts..."
-    -rm -f odin/buddhabrot
-    -rm -f roc/buddhabrot
+    -rm -f {{ODIN_BIN}}
+    -rm -f {{ROC_BIN}}
     -rm -rf rust/target
     -rm -rf zig/zig-out
-    -rm -f */buddhabrot.pgm
+    -rm -f */{{BINARY_NAME}}.pgm
     -rm -f *_profile.trace
     @echo "✅ Clean completed!"
 
@@ -67,44 +83,50 @@ lang-info:
 
 # Show executable file sizes
 file-sizes:
-    @echo "📏 Executable file sizes:"
-    @echo "**Binary Sizes:**"
-    @if [ -f "./odin/buddhabrot" ]; then \
-        ls -lh ./odin/buddhabrot | awk '{print "- Odin: " $5}'; \
-    else \
-        echo "- Odin: not built"; \
-    fi
-    @if [ -f "./roc/buddhabrot" ]; then \
-        ls -lh ./roc/buddhabrot | awk '{print "- Roc: " $5}'; \
-    else \
-        echo "- Roc: not built"; \
-    fi
-    @if [ -f "./rust/target/release/buddhabrot" ]; then \
-        ls -lh ./rust/target/release/buddhabrot | awk '{print "- Rust: " $5}'; \
-    else \
-        echo "- Rust: not built"; \
-    fi
-    @if [ -f "./zig/zig-out/bin/buddhabrot" ]; then \
-        ls -lh ./zig/zig-out/bin/buddhabrot | awk '{print "- Zig: " $5}'; \
-    else \
-        echo "- Zig: not built"; \
-    fi
+    #!/usr/bin/env bash
+    echo "📏 Executable file sizes:"
+    echo "**Binary Sizes:**"
+    
+    declare -A paths=(
+        ["odin"]="./{{ODIN_BIN}}"
+        ["roc"]="./{{ROC_BIN}}"
+        ["rust"]="./{{RUST_BIN}}"
+        ["zig"]="./{{ZIG_BIN}}"
+    )
+    
+    for lang in {{LANGUAGES}}; do
+        if [ -f "${paths[$lang]}" ]; then
+            size=$(ls -lh "${paths[$lang]}" | awk '{print $5}')
+            echo "- $(echo $lang | tr '[:lower:]' '[:upper:]' | head -c 1)$(echo $lang | tail -c +2): $size"
+        else
+            echo "- $(echo $lang | tr '[:lower:]' '[:upper:]' | head -c 1)$(echo $lang | tail -c +2): not built"
+        fi
+    done
 
 # Run benchmark
 bench: build-all
-    @echo "📊 Running benchmark..."
-    @if command -v hyperfine >/dev/null 2>&1; then \
-        hyperfine --warmup 1 --runs 3 \
-            --export-markdown benchmark_results.md \
-            --command-name "Odin" "./odin/buddhabrot" \
-            --command-name "Roc" "./roc/buddhabrot" \
-            --command-name "Rust" "./rust/target/release/buddhabrot" \
-            --command-name "Zig" "./zig/zig-out/bin/buddhabrot"; \
-        echo ""; \
-        echo "📋 Results saved to benchmark_results.md"; \
-    else \
-        echo "❌ hyperfine not found."; \
-        exit 1; \
+    #!/usr/bin/env bash
+    echo "📊 Running benchmark..."
+    if command -v hyperfine >/dev/null 2>&1; then
+        declare -A paths=(
+            ["odin"]="./{{ODIN_BIN}}"
+            ["roc"]="./{{ROC_BIN}}"
+            ["rust"]="./{{RUST_BIN}}"
+            ["zig"]="./{{ZIG_BIN}}"
+        )
+        
+        cmd_args=""
+        for lang in {{LANGUAGES}}; do
+            name="$(echo $lang | tr '[:lower:]' '[:upper:]' | head -c 1)$(echo $lang | tail -c +2)"
+            cmd_args="$cmd_args --command-name \"$name\" \"${paths[$lang]}\""
+        done
+        
+        eval "hyperfine --warmup 1 --runs 3 --export-markdown benchmark_results.md $cmd_args"
+        echo ""
+        echo "📋 Results saved to benchmark_results.md"
+    else
+        echo "❌ hyperfine not found."
+        exit 1
     fi
 
 # Development mode - rebuild and run a specific implementation
@@ -128,25 +150,25 @@ profile lang: (build lang)
 profile-odin:
     @echo "🔍 Starting Time Profiler for Odin..."
     @echo "Profile will be saved to: odin_profile.trace"
-    xcrun xctrace record --template "Time Profiler" --output odin_profile.trace --launch ./odin/buddhabrot
+    xcrun xctrace record --template "Time Profiler" --output odin_profile.trace --launch ./{{ODIN_BIN}}
 
 # Profile Roc implementation with Time Profiler (macOS only)
 [macos]
 profile-roc:
     @echo "🔍 Starting Time Profiler for Roc..."
     @echo "Profile will be saved to: roc_profile.trace"
-    xcrun xctrace record --template "Time Profiler" --output roc_profile.trace --launch ./roc/buddhabrot
+    xcrun xctrace record --template "Time Profiler" --output roc_profile.trace --launch ./{{ROC_BIN}}
 
 # Profile Rust implementation with Time Profiler (macOS only)
 [macos]
 profile-rust:
     @echo "🔍 Starting Time Profiler for Rust..."
     @echo "Profile will be saved to: rust_profile.trace"
-    xcrun xctrace record --template "Time Profiler" --output rust_profile.trace --launch ./rust/target/release/buddhabrot
+    xcrun xctrace record --template "Time Profiler" --output rust_profile.trace --launch ./{{RUST_BIN}}
 
 # Profile Zig implementation with Time Profiler (macOS only)
 [macos]
 profile-zig:
     @echo "🔍 Starting Time Profiler for Zig..."
     @echo "Profile will be saved to: zig_profile.trace"
-    xcrun xctrace record --template "Time Profiler" --output zig_profile.trace --launch ./zig/zig-out/bin/buddhabrot
+    xcrun xctrace record --template "Time Profiler" --output zig_profile.trace --launch ./{{ZIG_BIN}}
