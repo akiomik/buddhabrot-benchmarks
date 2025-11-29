@@ -16,6 +16,7 @@ fn main() -> Result<(), std::io::Error> {
 
 fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> Vec<u32> {
     let mut hist = vec![0u32; width * height];
+    let mut paths = Vec::with_capacity(max_iter);
 
     let xmin = -2.0;
     let xmax = 1.0;
@@ -33,7 +34,8 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
 
         let mut zr = 0.0;
         let mut zi = 0.0;
-        let mut path = Vec::with_capacity(max_iter);
+
+        paths.clear();
 
         let mut escaped = false;
 
@@ -44,7 +46,7 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
             zr = zr2;
             zi = zi2;
 
-            path.push((zr, zi));
+            paths.push((zr, zi));
 
             if zr * zr + zi * zi > 4.0 {
                 escaped = true;
@@ -53,10 +55,10 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
         }
 
         if escaped {
-            for (xr, yi) in path {
-                if xmin <= xr && xr <= xmax && ymin <= yi && yi <= ymax {
-                    let px = ((xr - xmin) * x_scale) as isize;
-                    let py = ((yi - ymin) * y_scale) as isize;
+            for (xr, yi) in &paths {
+                if xmin <= *xr && *xr <= xmax && ymin <= *yi && *yi <= ymax {
+                    let px = ((*xr - xmin) * x_scale) as isize;
+                    let py = ((*yi - ymin) * y_scale) as isize;
                     let px_usize = px as usize;
                     let py_usize = py as usize;
 
