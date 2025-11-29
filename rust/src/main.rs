@@ -34,8 +34,7 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
 
         let mut zr = 0.0;
         let mut zi = 0.0;
-        let mut path = Vec::new();
-        path.reserve(max_iter);
+        let mut path = Vec::with_capacity(max_iter);
 
         let mut escaped = false;
 
@@ -70,7 +69,7 @@ fn buddhabrot(width: usize, height: usize, samples: usize, max_iter: usize) -> V
         }
     }
 
-    return hist;
+    hist
 }
 
 fn write_pgm(
